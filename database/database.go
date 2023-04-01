@@ -16,9 +16,8 @@ import (
 
 type Database struct {
 	log *zap.Logger
+	rw  sync.RWMutex
 	sm  map[string]*series.Series
-
-	rw sync.RWMutex
 
 	pb.UnimplementedDatabaseServer
 }
@@ -55,9 +54,11 @@ func (db *Database) CreateSeries(ctxt context.Context, req *pb.CreateSeriesReque
 
 	ds, err := series.Create(req.Name, req.IndexGenerator, req.ContextLabels)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create series %s: %s", req.Name, err))
+		db.log.Error("failed to create series", zap.String("series", ds.Name()), zap.Error(err))
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create series"))
 	}
 
+	db.log.Info("created new series", zap.String("series", ds.Name()))
 	db.sm[ds.Name()] = ds
 	return &pb.CreateSeriesResponse{}, nil
 }
@@ -65,11 +66,13 @@ func (db *Database) CreateSeries(ctxt context.Context, req *pb.CreateSeriesReque
 func (db *Database) Append(ctxt context.Context, req *pb.AppendRequest) (*pb.AppendResponse, error) {
 	ds, ok := db.sm[req.Series]
 	if !ok {
-		return nil, status.Errorf(codes.Unavailable, fmt.Sprintf("series does not exist: %s", req.Series))
+		db.log.Error("intended to append to non-existent series", zap.String("series", req.Series))
+		return nil, status.Errorf(codes.Unavailable, fmt.Sprintf("series does not exist"))
 	}
 
 	if err := ds.Append(req.Value, req.Labels); err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to append into series %s: %s", ds.Name(), err))
+		db.log.Error("failed to append to series", zap.String("series", ds.Name()), zap.Error(err))
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to append into series"))
 	}
 
 	return &pb.AppendResponse{}, nil
