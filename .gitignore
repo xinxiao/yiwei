@@ -1,0 +1,9 @@
+# Bazel
+bazel-*
+
+# Intellij
+.idea/
+.ijwb/
+
+# misc
+.DS_Store
