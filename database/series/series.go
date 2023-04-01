@@ -16,11 +16,11 @@ var (
 )
 
 type Series struct {
-	n   string
-	ig  index.Generator
-	cm  map[string]string
-	lp  *page.Page
-	mut sync.Mutex
+	n  string
+	ig index.Generator
+	le *label.Env
+	lp *page.Page
+	rw sync.RWMutex
 
 	spb *pb.Series
 }
@@ -43,7 +43,7 @@ func Create(n string, igt pb.Series_IndexGeneratorType, ll []*pb.Label) (*Series
 	return &Series{
 		n:  n,
 		ig: ig,
-		cm: cm,
+		le: label.CreateEnv(cm),
 		lp: page.Create(),
 		spb: &pb.Series{
 			IndexGenerator: igt,
@@ -51,8 +51,4 @@ func Create(n string, igt pb.Series_IndexGeneratorType, ll []*pb.Label) (*Series
 			ContextLabels:  ll,
 		},
 	}, nil
-}
-
-func (s *Series) Name() string {
-	return s.n
 }

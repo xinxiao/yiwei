@@ -8,3 +8,35 @@ message Label {
   string key = 1;
   string value = 2;
 }
+
+message LabelFilter {
+  message Equals {
+    string key = 1;
+    string value = 2;
+  }
+
+  message Contains {
+    string key = 1;
+    string value = 2;
+  }
+
+  message Not { LabelFilter base = 1; }
+
+  message And {
+    LabelFilter first = 1;
+    LabelFilter second = 2;
+  }
+
+  message Or {
+    LabelFilter first = 1;
+    LabelFilter second = 2;
+  }
+
+  oneof filter {
+    Equals equals = 1;
+    Contains contains = 2;
+    Not not = 3;
+    And and = 4;
+    Or or = 5;
+  }
+}

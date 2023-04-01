@@ -2,6 +2,7 @@ package page
 
 import (
 	"flag"
+	"sync"
 
 	pb "yiwei/proto"
 
@@ -14,6 +15,7 @@ var (
 
 type Page struct {
 	id string
+	rw sync.RWMutex
 
 	ppb *pb.Page
 }
@@ -26,20 +28,4 @@ func Create() *Page {
 			Entries:  make([]*pb.Entry, 0, *size),
 		},
 	}
-}
-
-func (p *Page) ID() string {
-	return p.id
-}
-
-func (p *Page) SetNext(np *Page) {
-	p.ppb.NextPage = np.id
-}
-
-func (p *Page) IsEmpty() bool {
-	return len(p.ppb.Entries) == 0
-}
-
-func (p *Page) IsFull() bool {
-	return len(p.ppb.Entries) >= cap(p.ppb.Entries)
 }

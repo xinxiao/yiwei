@@ -5,6 +5,10 @@ import (
 	pb "yiwei/proto"
 )
 
+func (p *Page) SetNext(np *Page) {
+	p.ppb.NextPage = np.id
+}
+
 func (p *Page) Append(vi int64, val float32, ll []*pb.Label) error {
 	e := &pb.Entry{
 		Index: vi,
