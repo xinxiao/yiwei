@@ -12,6 +12,7 @@ go_library(
     ],
     importpath = "yiwei/database/series",
     deps = [
+        "//database/label",
         "//database/page",
         "//database/persistence",
         "//database/series/index",

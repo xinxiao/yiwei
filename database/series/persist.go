@@ -30,6 +30,6 @@ func Extract(sn string) (*Series, error) {
 	return s, nil
 }
 
-func (s *Series) Dump() error {
-	return persistence.DumpProto(s.spb, persistence.SeriesFilePath(s.n))
+func (s *Series) Commit() error {
+	return persistence.CommitProto(s.spb, persistence.SeriesFilePath(s.n))
 }

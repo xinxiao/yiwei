@@ -12,6 +12,7 @@ go_library(
     ],
     importpath = "yiwei/database/page",
     deps = [
+        "//database/label",
         "//database/persistence",
         "//proto:entity_go_proto",
         "@com_github_google_uuid//:go_default_library",

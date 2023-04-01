@@ -6,7 +6,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func DumpProto(pb proto.Message, p string) error {
+func CommitProto(pb proto.Message, p string) error {
 	src, err := proto.Marshal(pb)
 	if err != nil {
 		return err

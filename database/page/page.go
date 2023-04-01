@@ -36,6 +36,10 @@ func (p *Page) SetNext(np *Page) {
 	p.ppb.NextPage = np.id
 }
 
+func (p *Page) IsEmpty() bool {
+	return len(p.ppb.Entries) == 0
+}
+
 func (p *Page) IsFull() bool {
 	return len(p.ppb.Entries) >= cap(p.ppb.Entries)
 }

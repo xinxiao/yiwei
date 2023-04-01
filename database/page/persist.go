@@ -14,6 +14,6 @@ func Extract(pid string) (*Page, error) {
 	return &Page{id: pid, ppb: ppb}, nil
 }
 
-func (p *Page) Dump() error {
-	return persistence.DumpProto(p.ppb, persistence.PageFilePath(p.id))
+func (p *Page) Commit() error {
+	return persistence.CommitProto(p.ppb, persistence.PageFilePath(p.id))
 }
