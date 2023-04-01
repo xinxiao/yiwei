@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"yiwei/database/label"
+
+	"golang.org/x/exp/slices"
 )
 
 type equals struct {
@@ -22,4 +24,14 @@ type contains struct {
 func (c contains) Approve(env *label.Env) bool {
 	v, ok := env.Get(c.k)
 	return ok && strings.Contains(v, c.v)
+}
+
+type in struct {
+	k  string
+	vl []string
+}
+
+func (i in) Approve(env *label.Env) bool {
+	v, ok := env.Get(i.k)
+	return ok && slices.Contains(i.vl, v)
 }

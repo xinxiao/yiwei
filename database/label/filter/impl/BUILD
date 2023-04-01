@@ -8,5 +8,6 @@ go_library(
     importpath = "yiwei/database/label/filter/impl",
     deps = [
         "//database/label",
+        "@org_golang_x_exp//slices:go_default_library",
     ],
 )

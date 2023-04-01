@@ -16,6 +16,10 @@ func Contains(k, v string) Filter {
 	return &contains{k: k, v: v}
 }
 
+func In(k string, vl []string) Filter {
+	return &in{k: k, vl: vl}
+}
+
 func And(a, b Filter) Filter {
 	return &and{a: a, b: b}
 }
