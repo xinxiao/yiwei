@@ -1,6 +1,8 @@
 package series
 
 import (
+	"time"
+
 	"yiwei/database/page"
 	pb "yiwei/proto"
 )
@@ -10,7 +12,7 @@ func (s *Series) CommitPage() error {
 }
 
 func (s *Series) Append(val float32, ll []*pb.Label) error {
-	i := s.ig.Generate()
+	i := time.Now().UnixNano()
 
 	s.rw.Lock()
 	defer s.rw.Unlock()

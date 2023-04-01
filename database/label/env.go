@@ -1,24 +1,45 @@
 package label
 
+import (
+	"flag"
+
+	pb "yiwei/proto"
+)
+
+var (
+	ft = flag.Int("label_flatten_threshold", 16, "label list would be flatten as map if more than the threshold")
+)
+
 type Env struct {
-	m    map[string]string
-	prev *Env
+	l []*pb.Label
+	m map[string]string
 }
 
-func CreateEnv(m map[string]string) *Env {
+func CreateEnv(ll []*pb.Label) *Env {
+	if len(ll) < *ft {
+		return &Env{l: ll}
+	}
+
+	m := make(map[string]string)
+	for _, l := range ll {
+		m[l.Key] = l.Value
+	}
 	return &Env{m: m}
 }
 
-func (e *Env) Stack(m map[string]string) *Env {
-	return &Env{m: m, prev: e}
-}
-
 func (e *Env) Get(k string) (string, bool) {
-	v, ok := e.m[k]
-	if !ok && e.prev != nil {
-		return e.prev.Get(k)
+	if len(e.m) > 0 {
+		v, ok := e.m[k]
+		return v, ok
 	}
-	return v, ok
+
+	for _, l := range e.l {
+		if l.Key == k {
+			return l.Value, true
+		}
+	}
+
+	return "", false
 }
 
 func (e *Env) Assert(k string, asrt func(string) bool) bool {

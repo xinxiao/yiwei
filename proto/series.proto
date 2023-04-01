@@ -4,21 +4,11 @@ package yiwei.proto;
 
 option go_package = "yiwei/proto";
 
-import "proto/label.proto";
-
 message Series {
-  enum IndexGeneratorType {
-    UNDEFINED = 0;
-    TIMESTAMP = 1;
-    IOTA = 2;
-  }
-
   message IndexBlock {
     string page_id = 1;
     int64 first_index = 2;
   }
 
-  IndexGeneratorType index_generator = 1;
   repeated IndexBlock index_chain = 2;
-  repeated Label context_labels = 3;
 }

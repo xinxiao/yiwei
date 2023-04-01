@@ -15,6 +15,9 @@ proto_library(
     srcs = [
         "entry.proto",
     ],
+    deps = [
+        ":label_proto",
+    ],
 )
 
 proto_library(
@@ -44,7 +47,6 @@ proto_library(
     ],
     deps = [
         ":label_proto",
-        ":series_proto",
     ],
 )
 

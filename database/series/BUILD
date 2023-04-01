@@ -15,7 +15,6 @@ go_library(
         "//database/label",
         "//database/page",
         "//database/persistence",
-        "//database/series/index",
         "//proto:entity_go_proto",
         "@org_golang_google_protobuf//proto:go_default_library",
     ],

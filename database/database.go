@@ -16,8 +16,8 @@ import (
 
 type Database struct {
 	log *zap.Logger
-	rw  sync.RWMutex
 	sm  map[string]*series.Series
+	rw  sync.RWMutex
 
 	pb.UnimplementedDatabaseServer
 }
@@ -44,36 +44,36 @@ func Create(log *zap.Logger) (*Database, error) {
 	return &Database{log: log, sm: sm}, nil
 }
 
-func (db *Database) CreateSeries(ctxt context.Context, req *pb.CreateSeriesRequest) (*pb.CreateSeriesResponse, error) {
+func (db *Database) getSeries(sn string) (*series.Series, error) {
 	db.rw.Lock()
 	defer db.rw.Unlock()
 
-	if _, ok := db.sm[req.Name]; ok {
-		return &pb.CreateSeriesResponse{}, nil
+	ds, ok := db.sm[sn]
+	if ok {
+		return ds, nil
 	}
 
-	ds, err := series.Create(req.Name, req.IndexGenerator, req.ContextLabels)
+	ds, err := series.Create(sn)
 	if err != nil {
-		db.log.Error("failed to create series", zap.String("series", ds.Name()), zap.Error(err))
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create series"))
+		db.log.Error("failed to create series", zap.String("series", sn), zap.Error(err))
+		return nil, fmt.Errorf("failed to create series")
 	}
 
 	db.log.Info("created new series", zap.String("series", ds.Name()))
 	db.sm[ds.Name()] = ds
-	return &pb.CreateSeriesResponse{}, nil
+	return ds, nil
 }
 
 func (db *Database) Append(ctxt context.Context, req *pb.AppendRequest) (*pb.AppendResponse, error) {
-	ds, ok := db.sm[req.Series]
-	if !ok {
-		db.log.Error("intended to append to non-existent series", zap.String("series", req.Series))
-		return nil, status.Errorf(codes.Unavailable, fmt.Sprintf("series does not exist"))
+	ds, err := db.getSeries(req.Series)
+	if err != nil {
+		db.log.Error("failed to get series", zap.String("series", req.Series), zap.Error(err))
+		return nil, status.Errorf(codes.Internal, "failed to get series")
 	}
 
 	if err := ds.Append(req.Value, req.Labels); err != nil {
 		db.log.Error("failed to append to series", zap.String("series", ds.Name()), zap.Error(err))
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to append into series"))
+		return nil, status.Errorf(codes.Internal, "failed to append into series")
 	}
-
 	return &pb.AppendResponse{}, nil
 }

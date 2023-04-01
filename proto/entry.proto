@@ -4,8 +4,10 @@ package yiwei.proto;
 
 option go_package = "yiwei/proto";
 
+import "proto/label.proto";
+
 message Entry {
   int64 index = 1;
   float value = 2;
-  map<string, string> labels = 3;
+  repeated Label labels = 3;
 }

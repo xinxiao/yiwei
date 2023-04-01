@@ -5,15 +5,6 @@ package yiwei.proto;
 option go_package = "yiwei/proto";
 
 import "proto/label.proto";
-import "proto/series.proto";
-
-message CreateSeriesRequest {
-  string name = 1;
-  Series.IndexGeneratorType index_generator = 2;
-  repeated Label context_labels = 3;
-}
-
-message CreateSeriesResponse {}
 
 message AppendRequest {
   string series = 1;
@@ -24,6 +15,5 @@ message AppendRequest {
 message AppendResponse {}
 
 service Database {
-  rpc CreateSeries(CreateSeriesRequest) returns (CreateSeriesResponse) {};
   rpc Append(AppendRequest) returns (AppendResponse) {};
 }
