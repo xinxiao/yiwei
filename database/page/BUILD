@@ -6,12 +6,14 @@ go_library(
     name = "page",
     srcs = [
         "page.go",
-        "persistence.go",
+        "persist.go",
+        "read.go",
+        "write.go",
     ],
-    importpath = "yiwei/data/page",
+    importpath = "yiwei/database/page",
     deps = [
-        "//data/persistence",
-        "//proto:data_go_proto",
+        "//database/persistence",
+        "//proto:entity_go_proto",
         "@com_github_google_uuid//:go_default_library",
         "@org_golang_google_protobuf//proto:go_default_library",
     ],

@@ -5,15 +5,17 @@ package(default_visibility = ["//visibility:public"])
 go_library(
     name = "series",
     srcs = [
-        "persistence.go",
+        "persist.go",
+        "read.go",
         "series.go",
+        "write.go",
     ],
-    importpath = "yiwei/data/series",
+    importpath = "yiwei/database/series",
     deps = [
-        "//data/persistence",
-        "//data/page",
-        "//proto:data_go_proto",
-        "//data/series/index",
+        "//database/page",
+        "//database/persistence",
+        "//database/series/index",
+        "//proto:entity_go_proto",
         "@org_golang_google_protobuf//proto:go_default_library",
     ],
 )

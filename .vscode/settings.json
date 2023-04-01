@@ -4,6 +4,6 @@
         "GOPACKAGESDRIVER": "${workspaceFolder}/gopackagesdriver.sh",
     },
     "gopls": {
-        "formatting.local": "geendo"
+        "formatting.local": "yiwei"
     }
 }

@@ -8,7 +8,7 @@ go_library(
         "path.go",
         "proto.go",
     ],
-    importpath = "yiwei/data/persistence",
+    importpath = "yiwei/database/persistence",
     deps = [
         "@org_golang_google_protobuf//proto:go_default_library",
     ],

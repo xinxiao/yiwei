@@ -1,5 +1,5 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
-load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto_grpc//go:defs.bzl", "go_grpc_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -40,10 +40,22 @@ proto_library(
     ],
 )
 
-go_proto_library(
-    name = "data_go_proto",
+proto_library(
+    name = "database_proto",
+    srcs = [
+        "database.proto",
+    ],
+    deps = [
+        ":label_proto",
+        ":series_proto",
+    ],
+)
+
+go_grpc_library(
+    name = "entity_go_proto",
     importpath = "yiwei/proto",
     protos = [
+        ":database_proto",
         ":entry_proto",
         ":label_proto",
         ":page_proto",

@@ -1,23 +1,19 @@
 package series
 
 import (
-	"yiwei/data/page"
-	"yiwei/data/persistence"
-	"yiwei/data/series/index"
+	"yiwei/database/page"
+	"yiwei/database/persistence"
+	"yiwei/database/series/index"
 	pb "yiwei/proto"
-)
-
-var (
-	path = persistence.GetPath("series")
 )
 
 func Extract(sn string) (*Series, error) {
 	spb := &pb.Series{}
-	if err := persistence.ExtractProto(path(sn), spb); err != nil {
+	if err := persistence.ExtractProto(persistence.SeriesFilePath(sn), spb); err != nil {
 		return nil, err
 	}
 
-	ig, err := index.Get(spb.IndexGenerator)
+	ig, err := index.GetGenerator(spb.IndexGenerator)
 	if err != nil {
 		return nil, err
 	}
@@ -35,5 +31,5 @@ func Extract(sn string) (*Series, error) {
 }
 
 func (s *Series) Dump() error {
-	return persistence.DumpProto(s.spb, path(s.n))
+	return persistence.DumpProto(s.spb, persistence.SeriesFilePath(s.n))
 }

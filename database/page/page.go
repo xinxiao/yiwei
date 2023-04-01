@@ -36,19 +36,6 @@ func (p *Page) SetNext(np *Page) {
 	p.ppb.NextPage = np.id
 }
 
-func (p *Page) Next() string {
-	return p.ppb.NextPage
-}
-
 func (p *Page) IsFull() bool {
 	return len(p.ppb.Entries) >= cap(p.ppb.Entries)
-}
-
-func (p *Page) Append(vi int64, val float32, ll ...*pb.Label) error {
-	p.ppb.Entries = append(p.ppb.Entries, &pb.Entry{
-		Index:  vi,
-		Value:  val,
-		Labels: ll,
-	})
-	return nil
 }

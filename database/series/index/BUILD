@@ -5,5 +5,8 @@ package(default_visibility = ["//visibility:public"])
 go_library(
     name = "index",
     srcs = glob(["*.go"]),
-    importpath = "yiwei/data/series/index",
+    importpath = "yiwei/database/series/index",
+    deps = [
+        "//proto:entity_go_proto",
+    ],
 )
