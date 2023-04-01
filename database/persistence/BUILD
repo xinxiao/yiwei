@@ -5,6 +5,7 @@ package(default_visibility = ["//visibility:public"])
 go_library(
     name = "persistence",
     srcs = [
+        "file.go",
         "path.go",
         "proto.go",
     ],
