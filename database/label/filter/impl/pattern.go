@@ -12,18 +12,16 @@ type equals struct {
 	k, v string
 }
 
-func (e equals) Approve(env *label.Env) bool {
-	v, ok := env.Get(e.k)
-	return ok && v == e.v
+func (e *equals) Approve(env *label.Env) bool {
+	return env.Assert(e.k, func(v string) bool { return v == e.v })
 }
 
 type contains struct {
 	k, v string
 }
 
-func (c contains) Approve(env *label.Env) bool {
-	v, ok := env.Get(c.k)
-	return ok && strings.Contains(v, c.v)
+func (c *contains) Approve(env *label.Env) bool {
+	return env.Assert(c.k, func(v string) bool { return strings.Contains(v, c.v) })
 }
 
 type in struct {
@@ -31,7 +29,6 @@ type in struct {
 	vl []string
 }
 
-func (i in) Approve(env *label.Env) bool {
-	v, ok := env.Get(i.k)
-	return ok && slices.Contains(i.vl, v)
+func (i *in) Approve(env *label.Env) bool {
+	return env.Assert(i.k, func(v string) bool { return slices.Contains(i.vl, v) })
 }

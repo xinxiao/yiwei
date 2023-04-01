@@ -20,3 +20,8 @@ func (e *Env) Get(k string) (string, bool) {
 	}
 	return v, ok
 }
+
+func (e *Env) Assert(k string, asrt func(string) bool) bool {
+	v, ok := e.m[k]
+	return ok && asrt(v)
+}
