@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package yiwei.data.proto;
+
+option go_package = "yiwei/data/proto";
+
+message Label {
+  string key = 1;
+  string value = 2;
+}
