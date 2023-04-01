@@ -24,12 +24,25 @@ type Database struct {
 }
 
 func Create(log *zap.Logger) (*Database, error) {
-
 	if err := persistence.PrepareDataDirectories(); err != nil {
 		return nil, err
 	}
 
-	return &Database{log: log, sm: make(map[string]*series.Series)}, nil
+	sl, err := persistence.ScanSeriesDirectory()
+	if err != nil {
+		return nil, err
+	}
+
+	sm := make(map[string]*series.Series)
+	for _, sn := range sl {
+		ds, err := series.Extract(sn)
+		if err != nil {
+			return nil, err
+		}
+		sm[ds.Name()] = ds
+	}
+
+	return &Database{log: log, sm: sm}, nil
 }
 
 func (db *Database) CreateSeries(ctxt context.Context, req *pb.CreateSeriesRequest) (*pb.CreateSeriesResponse, error) {

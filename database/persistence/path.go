@@ -57,5 +57,5 @@ func DirectoryScanner(dir string) func() ([]string, error) {
 }
 
 var (
-	SeriesDirectoryScanner = DirectoryScanner(seriesDir)
+	ScanSeriesDirectory = DirectoryScanner(seriesDir)
 )
