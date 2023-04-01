@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package yiwei.proto;
+
+option go_package = "yiwei/proto";
+
+import "proto/entry.proto";
+
+message Page {
+  repeated Entry entries = 1;
+  string next_page = 2;
+}

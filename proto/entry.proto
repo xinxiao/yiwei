@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package yiwei.proto;
+
+option go_package = "yiwei/proto";
+
+import "proto/label.proto";
+
+message Entry {
+  int64 index = 1;
+  float value = 2;
+  repeated Label labels = 3;
+}

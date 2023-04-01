@@ -17,4 +17,8 @@ go_binary(
         "yiwei.go",
     ],
     importpath = "yiwei",
+    deps = [
+        "//data/persistence",
+        "//data/series",
+    ],
 )
