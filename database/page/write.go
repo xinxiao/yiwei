@@ -9,15 +9,10 @@ func (p *Page) SetNext(np *Page) {
 }
 
 func (p *Page) Append(vi int64, val float32, ll []*pb.Label) error {
-	e := &pb.Entry{
-		Index: vi,
-		Value: val,
-	}
-
-	if len(ll) > 0 {
-		e.Labels = ll
-	}
-
-	p.ppb.Entries = append(p.ppb.Entries, e)
+	p.ppb.Entries = append(p.ppb.Entries, &pb.Entry{
+		Index:  vi,
+		Value:  val,
+		Labels: ll,
+	})
 	return nil
 }

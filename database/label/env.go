@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ft = flag.Int("label_flatten_threshold", 16, "label list would be flatten as map if more than the threshold")
+	ft = flag.Int("label_flatten", 16, "label list would be flatten as map if more than the threshold")
 )
 
 type Env struct {
