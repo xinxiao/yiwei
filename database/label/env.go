@@ -43,6 +43,6 @@ func (e *Env) Get(k string) (string, bool) {
 }
 
 func (e *Env) Assert(k string, asrt func(string) bool) bool {
-	v, ok := e.m[k]
+	v, ok := e.Get(k)
 	return ok && asrt(v)
 }

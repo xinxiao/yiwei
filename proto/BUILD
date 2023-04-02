@@ -48,6 +48,7 @@ proto_library(
     deps = [
         ":entry_proto",
         ":label_proto",
+        ":series_proto",
     ],
 )
 

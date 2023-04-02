@@ -4,12 +4,16 @@ package yiwei.proto;
 
 option go_package = "yiwei/proto";
 
-import "proto/label.proto";
 import "proto/entry.proto";
+import "proto/label.proto";
+import "proto/series.proto";
 
 message DescribeRequest {}
 
-message DescribeResponse { repeated string series = 1; }
+message DescribeResponse {
+  repeated string names = 1;
+  repeated SeriesDescriptor descriptors = 2;
+}
 
 message AppendRequest {
   string series = 1;

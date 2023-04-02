@@ -12,3 +12,9 @@ message Series {
 
   repeated IndexBlock index_chain = 2;
 }
+
+message SeriesDescriptor {
+  int64 start = 1;
+  int64 end = 2;
+  int64 size = 3;
+}

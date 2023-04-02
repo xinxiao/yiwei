@@ -11,7 +11,6 @@ import (
 	pb "yiwei/proto"
 
 	"go.uber.org/zap"
-	"golang.org/x/exp/maps"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -67,18 +66,21 @@ func (db *Database) getSeries(sn string) (*series.Series, error) {
 }
 
 func (db *Database) query(req *pb.QueryRequest) (chan *pb.Entry, chan error, error) {
-	ds, err := db.getSeries(req.Series)
-	if err != nil {
-		return nil, nil, err
+	db.RLock()
+	defer db.RUnlock()
+
+	ds, ok := db.sm[req.Series]
+	if !ok {
+		return nil, nil, fmt.Errorf("series does not exist: %s", req.Series)
 	}
 
 	c, ec := ds.Read(req.Start, req.End)
+
 	if fe := req.Filter; fe != nil {
-		f, err := filter.Parse(fe)
+		f, err := filter.Parse(req.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
-
 		c = filter.Filter(f, c)
 	}
 
@@ -86,13 +88,18 @@ func (db *Database) query(req *pb.QueryRequest) (chan *pb.Entry, chan error, err
 }
 
 func (db *Database) Describe(_ context.Context, req *pb.DescribeRequest) (*pb.DescribeResponse, error) {
-	db.RLock()
-	defer db.RUnlock()
-
-	return &pb.DescribeResponse{Series: maps.Keys(db.sm)}, nil
+	res := &pb.DescribeResponse{}
+	for sn, ds := range db.sm {
+		res.Names = append(res.Names, sn)
+		res.Descriptors = append(res.Descriptors, ds.Describe())
+	}
+	return res, nil
 }
 
 func (db *Database) Append(_ context.Context, req *pb.AppendRequest) (*pb.AppendResponse, error) {
+	db.Lock()
+	defer db.Unlock()
+
 	ds, err := db.getSeries(req.Series)
 	if err != nil {
 		db.log.Error("failed to get series", zap.String("series", req.Series), zap.Error(err))
@@ -118,13 +125,14 @@ func (db *Database) QueryBatch(_ context.Context, req *pb.QueryRequest) (*pb.Que
 	for {
 		select {
 		case e, ok := <-c:
-			rl = append(rl, &pb.Reading{Entry: e})
 			if !ok {
 				return &pb.QueryBatchResponse{Readings: rl}, nil
 			}
+
+			rl = append(rl, &pb.Reading{Entry: e})
 		case err := <-ec:
 			db.log.Error("query interrupted by internal error", zap.String("series", req.Series), zap.Error(err))
-			return nil, status.Errorf(codes.Internal, "query stream was interrupted")
+			return nil, status.Errorf(codes.Internal, "batch query was interrupted")
 		}
 	}
 }
@@ -139,17 +147,15 @@ func (db *Database) QueryStream(req *pb.QueryRequest, s pb.Database_QueryStreamS
 	for {
 		select {
 		case e, ok := <-c:
-			if err := s.Send(&pb.Reading{Entry: e}); err != nil {
-				db.log.Error("query interrupted while trying to deliver reading", zap.String("series", req.Series), zap.Error(err))
-				return status.Errorf(codes.Internal, "failed to deliver query reading stream")
-			}
-
 			if !ok {
 				return nil
+			} else if err := s.Send(&pb.Reading{Entry: e}); err != nil {
+				db.log.Error("query interrupted while trying to deliver reading", zap.String("series", req.Series), zap.Error(err))
+				return status.Errorf(codes.Internal, "failed to deliver query stream")
 			}
 		case err := <-ec:
 			db.log.Error("query interrupted by internal error", zap.String("series", req.Series), zap.Error(err))
-			return status.Errorf(codes.Internal, "query stream was interrupted")
+			return status.Errorf(codes.Internal, "stream query was interrupted")
 		}
 	}
 }

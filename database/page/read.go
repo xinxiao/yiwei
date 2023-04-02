@@ -16,8 +16,12 @@ func (p *Page) IsEmpty() bool {
 	return p.Size() == 0
 }
 
+func (p *Page) LatestIndex() int64 {
+	return p.ppb.Entries[p.Size()-1].Index
+}
+
 func (p *Page) IsFull() bool {
-	return p.Size() >= cap(p.ppb.Entries)
+	return p.Size() >= Capacity()
 }
 
 func (p *Page) next() string {
@@ -41,8 +45,10 @@ func (p *Page) read(b, e int64, c chan *pb.Entry, ec chan error) {
 		return
 	}
 
+	s := p.Size()
+
 	npid := p.next()
-	i, j := 0, p.Size()-1
+	i, j := 0, s-1
 
 	pfc := make(chan *pb.Entry)
 	go p.prefetch(b, e, p.entry(j).Index, npid, pfc, ec)
@@ -56,7 +62,7 @@ func (p *Page) read(b, e int64, c chan *pb.Entry, ec chan error) {
 		}
 	}
 
-	for ei := i; p.entry(ei).Index <= e; ei += 1 {
+	for ei := i; ei < s && p.entry(ei).Index <= e; ei += 1 {
 		c <- p.entry(ei)
 	}
 

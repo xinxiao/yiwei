@@ -9,6 +9,24 @@ func (s *Series) Name() string {
 	return s.n
 }
 
+func (s *Series) Size() int {
+	s.RLock()
+	defer s.RUnlock()
+
+	return (len(s.spb.IndexChain)-1)*page.Capacity() + s.lp.Size()
+}
+
+func (s *Series) Describe() *pb.SeriesDescriptor {
+	s.RLock()
+	defer s.RUnlock()
+
+	return &pb.SeriesDescriptor{
+		Size:  int64(s.Size()),
+		Start: s.pageIndex(0),
+		End:   s.lp.LatestIndex(),
+	}
+}
+
 func (s *Series) totalPageSize() int {
 	s.RLock()
 	defer s.RUnlock()
@@ -40,7 +58,6 @@ func (s *Series) Read(b, e int64) (chan *pb.Entry, chan error) {
 }
 
 func (s *Series) read(b, e int64, c chan *pb.Entry, ec chan error) {
-	defer close(ec)
 	defer close(c)
 
 	p, err := page.Extract(s.findPage(b))

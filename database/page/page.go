@@ -9,8 +9,12 @@ import (
 )
 
 var (
-	size = flag.Uint("page_size", 512, "number of entries allowed in a single page")
+	size = flag.Int("page_size", 512, "number of entries allowed in a single page")
 )
+
+func Capacity() int {
+	return *size
+}
 
 type Page struct {
 	id  string
@@ -21,8 +25,7 @@ func Create() *Page {
 	return &Page{
 		id: uuid.NewString(),
 		ppb: &pb.Page{
-			NextPage: "",
-			Entries:  make([]*pb.Entry, 0, *size),
+			Entries: make([]*pb.Entry, 0, Capacity()),
 		},
 	}
 }
