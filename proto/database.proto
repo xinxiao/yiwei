@@ -5,6 +5,7 @@ package yiwei.proto;
 option go_package = "yiwei/proto";
 
 import "proto/label.proto";
+import "proto/entry.proto";
 
 message DescribeRequest {}
 
@@ -18,7 +19,20 @@ message AppendRequest {
 
 message AppendResponse {}
 
+message QueryRequest {
+  string series = 1;
+  int64 start = 2;
+  int64 end = 3;
+  LabelFilter filter = 4;
+}
+
+message Reading { Entry entry = 1; }
+
+message QueryBatchResponse { repeated Reading readings = 1; }
+
 service Database {
   rpc Describe(DescribeRequest) returns (DescribeResponse) {};
   rpc Append(AppendRequest) returns (AppendResponse) {};
+  rpc QueryBatch(QueryRequest) returns (QueryBatchResponse) {};
+  rpc QueryStream(QueryRequest) returns (stream Reading) {};
 }

@@ -2,7 +2,6 @@ package page
 
 import (
 	"flag"
-	"sync"
 
 	pb "yiwei/proto"
 
@@ -16,8 +15,6 @@ var (
 type Page struct {
 	id  string
 	ppb *pb.Page
-
-	sync.RWMutex
 }
 
 func Create() *Page {

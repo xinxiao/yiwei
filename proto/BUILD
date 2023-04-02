@@ -46,6 +46,7 @@ proto_library(
         "database.proto",
     ],
     deps = [
+        ":entry_proto",
         ":label_proto",
     ],
 )
