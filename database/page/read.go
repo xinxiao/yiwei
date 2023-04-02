@@ -9,8 +9,8 @@ func (p *Page) Next() (*Page, error) {
 }
 
 func (p *Page) Size() int {
-	p.rw.RLock()
-	defer p.rw.RUnlock()
+	p.RLock()
+	defer p.RUnlock()
 
 	return len(p.ppb.Entries)
 }

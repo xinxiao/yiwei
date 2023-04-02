@@ -17,9 +17,9 @@ import (
 type Database struct {
 	log *zap.Logger
 	sm  map[string]*series.Series
-	rw  sync.RWMutex
 
 	pb.UnimplementedDatabaseServer
+	sync.RWMutex
 }
 
 func Create(log *zap.Logger) (*Database, error) {
@@ -45,8 +45,8 @@ func Create(log *zap.Logger) (*Database, error) {
 }
 
 func (db *Database) getSeries(sn string) (*series.Series, error) {
-	db.rw.Lock()
-	defer db.rw.Unlock()
+	db.Lock()
+	defer db.Unlock()
 
 	ds, ok := db.sm[sn]
 	if ok {
@@ -62,6 +62,17 @@ func (db *Database) getSeries(sn string) (*series.Series, error) {
 	db.log.Info("created new series", zap.String("series", ds.Name()))
 	db.sm[ds.Name()] = ds
 	return ds, nil
+}
+
+func (db *Database) Describe(ctxt context.Context, req *pb.DescribeRequest) (*pb.DescribeResponse, error) {
+	db.RLock()
+	defer db.RUnlock()
+
+	res := &pb.DescribeResponse{}
+	for sn := range db.sm {
+		res.Series = append(res.Series, sn)
+	}
+	return res, nil
 }
 
 func (db *Database) Append(ctxt context.Context, req *pb.AppendRequest) (*pb.AppendResponse, error) {

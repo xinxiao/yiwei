@@ -14,11 +14,11 @@ var (
 )
 
 type Series struct {
-	n  string
-	lp *page.Page
-	rw sync.RWMutex
-
+	n   string
+	lp  *page.Page
 	spb *pb.Series
+
+	sync.RWMutex
 }
 
 func Create(n string) (*Series, error) {

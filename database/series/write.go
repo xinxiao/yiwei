@@ -14,8 +14,8 @@ func (s *Series) CommitPage() error {
 func (s *Series) Append(val float32, ll []*pb.Label) error {
 	i := time.Now().UnixNano()
 
-	s.rw.Lock()
-	defer s.rw.Unlock()
+	s.Lock()
+	defer s.Unlock()
 
 	if s.lp.IsEmpty() {
 		s.spb.IndexChain = append(

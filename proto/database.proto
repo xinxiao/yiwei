@@ -6,6 +6,10 @@ option go_package = "yiwei/proto";
 
 import "proto/label.proto";
 
+message DescribeRequest {}
+
+message DescribeResponse { repeated string series = 1; }
+
 message AppendRequest {
   string series = 1;
   float value = 2;
@@ -15,5 +19,6 @@ message AppendRequest {
 message AppendResponse {}
 
 service Database {
+  rpc Describe(DescribeRequest) returns (DescribeResponse) {};
   rpc Append(AppendRequest) returns (AppendResponse) {};
 }

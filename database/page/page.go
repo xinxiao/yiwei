@@ -14,10 +14,10 @@ var (
 )
 
 type Page struct {
-	id string
-	rw sync.RWMutex
-
+	id  string
 	ppb *pb.Page
+
+	sync.RWMutex
 }
 
 func Create() *Page {
