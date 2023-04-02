@@ -10,19 +10,23 @@ import (
 
 const (
 	dataFileSuffix = ".dat"
-	pageDir        = "page"
-	seriesDir      = "series"
+)
+
+const (
+	pageDir   = "page"
+	seriesDir = "series"
 )
 
 var (
 	dataDir = flag.String("data_dir", "/var/lib/yiwei", "location to store yiwei data")
 )
 
+var (
+	allDataDirs = make([]string, 0)
+)
+
 func PrepareDataDirectories() error {
-	for _, dir := range []string{
-		pageDir,
-		seriesDir,
-	} {
+	for _, dir := range allDataDirs {
 		if err := os.MkdirAll(path.Join(*dataDir, dir), os.ModePerm); err != nil {
 			return err
 		}
@@ -31,6 +35,7 @@ func PrepareDataDirectories() error {
 }
 
 func FilePath(dir string) func(string) string {
+	allDataDirs = append(allDataDirs, dir)
 	return func(f string) string {
 		return path.Join(*dataDir, dir, f+dataFileSuffix)
 	}
